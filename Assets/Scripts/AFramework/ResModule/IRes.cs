@@ -4,11 +4,14 @@ namespace AFramework.ResModule
 {
     public interface IRes
     {
+        object Result { get; }
         void Retain();
         void Retain(object owner);
         void Release();
-        void IsUnUsed();
-        IEnumerable<IRes> GetDependencies();  
+        //void IsUnUsed();
+        //IEnumerable<IRes> GetDependencies();
+        
+        ProgressResult<float,IRes> ProgressResult { get; }
     }
     
     public interface IResManager

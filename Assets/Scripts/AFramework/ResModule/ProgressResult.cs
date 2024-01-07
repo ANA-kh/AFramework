@@ -20,6 +20,21 @@ namespace AFramework.ResModule
         /// 完成或异常
         /// </summary>
         public bool IsDone => _done;
+        public void Retain()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Retain(object owner)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Release()
+        {
+            throw new NotImplementedException();
+        }
+
         public void OnCallback(Action<IProgressResult<TProgress, TResult>> callback)
         {
             if (callback == null)

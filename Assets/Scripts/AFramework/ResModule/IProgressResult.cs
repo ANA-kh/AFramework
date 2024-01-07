@@ -9,6 +9,10 @@ namespace AFramework.ResModule
         Exception Exception { get; }
         bool IsDone { get; }
         
+        void Retain();
+        void Retain(object owner);
+        void Release();
+        
         /// <summary>
         /// Called when the task is finished.
         /// </summary>
