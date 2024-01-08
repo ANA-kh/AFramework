@@ -2,16 +2,11 @@ using System;
 
 namespace AFramework.ResModule
 {
-    public interface IProgressResult<TProgress, TResult>
+    public interface IProgressResult<out TProgress, out TResult>
     {
         TProgress Progress { get; }
         TResult Result { get; }
         Exception Exception { get; }
-        bool IsDone { get; }
-        
-        void Retain();
-        void Retain(object owner);
-        void Release();
         
         /// <summary>
         /// Called when the task is finished.
@@ -24,6 +19,5 @@ namespace AFramework.ResModule
         /// </summary>
         /// <param name="callback"></param>
         void OnProgressCallback(Action<TProgress> callback);
-        void UpdateProgress(TProgress progress);
     }
 }
