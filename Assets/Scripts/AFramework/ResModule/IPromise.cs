@@ -8,8 +8,8 @@ namespace AFramework.ResModule
         void SetException(Exception exception);
     }
     
-    public interface IProgressPromise<TProgress, TResult> :IPromise<TResult>
+    public interface IProgressPromise<in TResult> :IPromise<TResult>
     {
-        void UpdateProgress(TProgress progress);
+        void UpdateProgress(float progress);
     }
 }
