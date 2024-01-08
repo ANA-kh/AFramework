@@ -15,4 +15,7 @@ res  资源   引用计数
 
 Resources 资源管理器(bundle resource simulate)
 
-assetbundle循环依赖
+
+问题:
+如果assetbundle循环依赖,会有问题吗
+异步加载后立刻同步加载
