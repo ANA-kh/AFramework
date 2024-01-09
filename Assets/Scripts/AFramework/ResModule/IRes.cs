@@ -1,23 +1,39 @@
-using System.Collections.Generic;
+using System;
+using System.Collections;
+using Object = UnityEngine.Object;
 
 namespace AFramework.ResModule
 {
-    public interface IRes
+    public interface IRes:IDisposable
     {
-        object Result { get; }
+        Object Result { get; }
         void Retain();
         void Retain(object owner);
         void Release();
-        //void IsUnUsed();
-        //IEnumerable<IRes> GetDependencies();
         
-        ProgressResult<float,IRes> ProgressResult { get; }
+        bool IsDone { get; }
+        float Progress { get; }
+        //Exception Exception { get; }
+        
+        /// <summary>
+        /// Called when the task is finished.
+        /// </summary>
+        /// <param name="callback"></param>
+        void OnCallback(Action<Object> callback);
+
+        /// <summary>
+        /// Called when the progress update.
+        /// </summary>
+        /// <param name="callback"></param>
+        void OnProgressCallback(Action<float> callback);
     }
-    
+
     public interface IResManager
     {
-        IResLoader GetLoader<T>(string url) where T : IResLoader, new();
-        IResLoader NewLoader<T>(string url) where T : IResLoader, new();
+        void Retain(Res res);
+        void Release(Res res);
+        Res Load(string path);
+        Res LoadAsync(string path);
     }
     
     public interface IResLoader

@@ -2,18 +2,14 @@ using System;
 
 namespace AFramework.ResModule
 {
-    public interface IPromise<TResult>
+    public interface IPromise<in TResult>
     {
-        TResult Result { get; }
-        Exception Exception { get; }
-        bool IsDone { get; }
         void SetResult(TResult result);
         void SetException(Exception exception);
     }
     
-    public interface IProgressPromise<TProgress, TResult> :IPromise<TResult>
+    public interface IProgressPromise<in TResult> :IPromise<TResult>
     {
-        TProgress Progress { get; }
-        void UpdateProgress(TProgress progress);
+        void UpdateProgress(float progress);
     }
 }
