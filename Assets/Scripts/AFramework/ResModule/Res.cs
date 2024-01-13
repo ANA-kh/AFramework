@@ -6,56 +6,6 @@ using Object = UnityEngine.Object;
 
 namespace AFramework.ResModule
 {
-    public class LocalRes:Res
-    {
-        private string _path;
-
-        public LocalRes(string path,IResManager resManager)
-        {
-            _path = path;
-            ResManager = resManager;
-        }
-
-        public override string Key()
-        {
-            return _path;
-        }
-        
-        private string PathWithoutExtension => Path.GetFilePathWithoutExtension(_path);
-
-        public override Res Load()
-        {
-            _result = Resources.Load(PathWithoutExtension);
-            OnFinish();
-            return this;
-        }
-
-        protected override IEnumerator CoLoad()
-        {
-            var request = Resources.LoadAsync(PathWithoutExtension);
-            while (!request.isDone)
-            {
-                _progressCallback?.Invoke(request.progress);
-                yield return null;
-            }
-            _result = request.asset;
-            if (_result == null)
-            {
-                Debug.LogException(new Exception($"Load asset failure.The asset named \"{PathWithoutExtension}\" is not found."));
-            }
-            OnFinish();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            Resources.UnloadAsset(_result);
-            _result = null;
-            base.Dispose(disposing);
-        }
-    }
     public abstract class Res:IRes
     {
         protected bool _done;
@@ -70,10 +20,12 @@ namespace AFramework.ResModule
         
         public IResManager ResManager { get; set; }
 
-        // public virtual IEnumerable<Res> Dependencies()
-        // {
-        //     return null;
-        // }
+        public Res(string path,IResManager resManager)
+        {
+            _path = path;
+            ResManager = resManager;
+        }
+        
         public void Retain()
         {
             if (this._disposed)
@@ -105,9 +57,13 @@ namespace AFramework.ResModule
             return _refCount <= 0;
         }
 
-        public abstract Res Load();
-        public virtual Res LoadAsync()
+        public abstract IRes Load();
+        public virtual IRes LoadAsync()
         {
+            if (_loading || _done)
+                return this;
+            
+            _loading = true;
             CoroutineRunner.MStartCoroutine(Wrap(CoLoad()));
             return this;
         }
@@ -120,6 +76,7 @@ namespace AFramework.ResModule
             }
             finally
             {
+                _loading = false;
                 Release();
             }
         }
@@ -164,6 +121,8 @@ namespace AFramework.ResModule
         
         #region IDisposable
         protected bool _disposed;
+        protected string _path;
+        private bool _loading;
 
         public void Dispose()
         {
@@ -172,13 +131,12 @@ namespace AFramework.ResModule
         }
         protected virtual void Dispose(bool disposing)
         {
-            //TODO 若加载还未完成,如何处理?
+            //TODO 若加载还未完成,如何处理?  目前加载前会retain,加载完成会release,故加载过程中不会被回收.  考虑别的方式
             if (_disposed)
                 return;
             
             if (disposing)
             {
-                // TODO release managed resources here
                 _callback = null;
                 _progressCallback = null;
                 _result = null;
@@ -188,13 +146,16 @@ namespace AFramework.ResModule
         }
         #endregion
 
-        public abstract string Key();
-
         protected void OnFinish()
         {
             _done = true;
             _progressCallback?.Invoke(1);
             _callback?.Invoke(_result);
+        }
+
+        public virtual string Key()
+        {
+            return _path;
         }
     }
 }
