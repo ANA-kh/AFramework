@@ -15,7 +15,7 @@ namespace AFramework.ResModule
         protected Action<Object> _callback;
         protected Action<float> _progressCallback;
         public bool IsDone => _done;
-        public Object Result => _result;
+        public virtual Object Result => _result;
         public float Progress => _progress;
         
         public IResManager ResManager { get; set; }
@@ -153,7 +153,7 @@ namespace AFramework.ResModule
             _callback?.Invoke(_result);
         }
 
-        public virtual string Key()
+        public string Path()
         {
             return _path;
         }

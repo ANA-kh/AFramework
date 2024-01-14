@@ -7,6 +7,11 @@ namespace AFramework.ResModule
     public interface IRes:IDisposable
     {
         Object Result { get; }
+        /// <summary>
+        /// 缓存用关键字
+        /// </summary>
+        /// <returns></returns>
+        string Path();
         void Retain();
         void Retain(object owner);
         void Release();

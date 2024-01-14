@@ -2,25 +2,13 @@
 {
     public class LocalResManager : ResManager
     {
-        public override Res Load(string path)
+        protected override Res GetOrCreateRes(string path)
         {
-            _resMap.TryGetValue(path, out var res);
-            if (res == null)
+            var key = path;
+            if (!_resMap.TryGetValue(key, out var res))
             {
                 res = new LocalRes(path, this);
-                res.Load();
-            }
-
-            return res;
-        }
-
-        public override Res LoadAsync(string path)
-        {
-            _resMap.TryGetValue(path, out var res);
-            if (res == null)
-            {
-                res = new LocalRes(path, this);
-                res.LoadAsync();
+                Retain(res);
             }
 
             return res;

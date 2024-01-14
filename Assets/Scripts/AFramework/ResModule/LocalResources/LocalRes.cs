@@ -7,9 +7,11 @@ namespace AFramework.ResModule.LocalResources
 {
     public class LocalRes:Res
     {
-        private string PathWithoutExtension => Path.GetFilePathWithoutExtension(_path);
+        private string PathWithoutExtension => Utilities.Path.GetFilePathWithoutExtension(_path);
 
         public LocalRes(string path, IResManager resManager) : base(path, resManager) { }
+        
+        //TODO 当正在LoadAsync时，调用Load会重复加载
         public override IRes Load()
         {
             _result = Resources.Load(PathWithoutExtension);
@@ -41,6 +43,10 @@ namespace AFramework.ResModule.LocalResources
             Resources.UnloadAsset(_result);
             _result = null;
             base.Dispose(disposing);
+        }
+        public new static string Key(string path)
+        {
+            return path;
         }
     }
 }
