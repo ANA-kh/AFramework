@@ -15,6 +15,7 @@ namespace AFramework.ResModule
         void Retain();
         void Retain(object owner);
         void Release();
+        int RefCount { get; }
         
         bool IsDone { get; }
         float Progress { get; }

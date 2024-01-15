@@ -18,23 +18,12 @@ namespace AFramework.ResModule.BundleResources
         {
             if (!_resMap.TryGetValue(path, out var res))
             {
-                res = new BundleAssetRes(path, this, GetOrCreateBundleRes(path));
+                BundleInfo bundleInfo = _bundleManifest.GetBundleInfoByAssetPath(path);
+                res = new BundleAssetRes(path, this, GetOrCreateBundleRes(bundleInfo));
                 Retain(res);
             }
 
             return res;
-        }
-
-        // private string GetBundleKey(BundleInfo bundleInfo)
-        // {
-        //     return "bundle_" + bundleInfo.BundleName;
-        // }
-
-        private BundleRes GetOrCreateBundleRes(string path)
-        {
-            BundleInfo bundleInfo = _bundleManifest.GetBundleInfoByAssetPath(path);
-
-            return GetOrCreateBundleRes(bundleInfo);
         }
 
         private BundleRes GetOrCreateBundleRes(BundleInfo bundleInfo)
@@ -48,10 +37,12 @@ namespace AFramework.ResModule.BundleResources
 
             return res as BundleRes;
         }
+        
+        private FileBundleLoader _fileBundleLoader = new FileBundleLoader();
 
         public IBundleLoader GetBundleLoader(BundleInfo bundleInfo)
         {
-            throw new NotImplementedException();
+            return _fileBundleLoader;
         }
 
         public List<BundleRes> GetDependencies(BundleInfo bundleInfo)
@@ -66,37 +57,29 @@ namespace AFramework.ResModule.BundleResources
             return dependencies;
         }
     }
-
-    [Serializable]
-    public class BundleInfo
+    
+    public interface IBundleLoader
     {
-        //TODO 检查这些字段的意义
-        [SerializeField]
-        private string name;
-        [SerializeField]
-        private string variant;
-        [SerializeField]
-        private string hash;
-        [SerializeField]
-        private uint crc;
-        [SerializeField]
-        private long fileSize;
-        [SerializeField]
-        private string filename;
-        [SerializeField]
-        private string encoding;
-        [SerializeField]
-        private bool published;
-        [SerializeField]
-        private string[] dependencies = null;
-        [SerializeField]
-        private string[] assets = null;
-        [SerializeField]
-        private bool streamedScene;
+        void LoadBundleAsync(BundleInfo bundleInfo, Action<AssetBundle> action);
+        AssetBundle LoadBundle(BundleInfo bundleInfo);
+    }
 
-        public string Name => name;
-        public string[] Assets => assets;
-        public bool Published => published;
-        public string[] Dependencies => dependencies;
+    public class FileBundleLoader:IBundleLoader
+    {
+        //TODO 处理路径
+        public static string BundleRootPath = "D:/UnityProject/AFramework/Assets/StreamingAssets/bundles/";
+        public void LoadBundleAsync(BundleInfo bundleInfo, Action<AssetBundle> action)
+        {
+            var request = AssetBundle.LoadFromFileAsync(System.IO.Path.Combine(BundleRootPath, bundleInfo.FileName));
+            request.completed += operation =>
+            {
+                action?.Invoke(request.assetBundle);
+            };
+        }
+
+        public AssetBundle LoadBundle(BundleInfo bundleInfo)
+        {
+            return AssetBundle.LoadFromFile(System.IO.Path.Combine(BundleRootPath, bundleInfo.Name));
+        }
     }
 }

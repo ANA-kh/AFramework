@@ -1,5 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using AFramework.ResModule.Utilities;
+using UnityEngine;
 
 namespace AFramework.ResModule
 {
@@ -24,18 +27,25 @@ namespace AFramework.ResModule
             }
 
             //TODO: LRU
-            res.Dispose();
+            CoroutineRunner.MStartCoroutine(DelayUnLoadRes(res));
+        }
+
+        private IEnumerator DelayUnLoadRes(Res res)
+        {
+            yield return new WaitForSeconds(5);
+            if (res.IsDone && res.RefCount <= 0)
+                res.Dispose();
         }
 
         public virtual Res Load(string path)
         {
             var res = GetOrCreateRes(path);
-            if (!res.IsDone) 
+            if (!res.IsDone)
                 res.Load();
-            
+
             return res;
         }
-        
+
         protected abstract Res GetOrCreateRes(string path);
 
         public virtual Res LoadAsync(string path)

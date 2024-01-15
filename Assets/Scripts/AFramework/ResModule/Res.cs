@@ -17,7 +17,7 @@ namespace AFramework.ResModule
         public bool IsDone => _done;
         public virtual Object Result => _result;
         public float Progress => _progress;
-        
+        public int RefCount => _refCount;
         public IResManager ResManager { get; set; }
 
         public Res(string path,IResManager resManager)

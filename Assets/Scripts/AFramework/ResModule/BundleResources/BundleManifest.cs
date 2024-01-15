@@ -81,4 +81,38 @@ namespace AFramework.ResModule.BundleResources
             return JsonUtility.FromJson<BundleManifest>(json);
         }
     }
+    
+    [Serializable]
+    public class BundleInfo
+    {
+        //TODO 检查这些字段的意义
+        [SerializeField]
+        private string name;
+        [SerializeField]
+        private string variant;
+        [SerializeField]
+        private string hash;
+        [SerializeField]
+        private uint crc;
+        [SerializeField]
+        private long fileSize;
+        [SerializeField]
+        private string filename;
+        [SerializeField]
+        private string encoding;
+        [SerializeField]
+        private bool published;
+        [SerializeField]
+        private string[] dependencies = null;
+        [SerializeField]
+        private string[] assets = null;
+        [SerializeField]
+        private bool streamedScene;
+
+        public string Name => name;
+        public string[] Assets => assets;
+        public bool Published => published;
+        public string[] Dependencies => dependencies;
+        public string FileName => filename;
+    }
 }
