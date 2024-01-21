@@ -1,7 +1,9 @@
-using System;
 using System.Collections.Generic;
 using AFramework.ResModule.Utilities;
-using UnityEngine;
+#if UNITY_ANDROID && !UNITY_EDITOR
+using Ionic.Zip;
+using System.Text.RegularExpressions;
+#endif
 
 namespace AFramework.ResModule.BundleResources
 {
@@ -44,6 +46,11 @@ namespace AFramework.ResModule.BundleResources
         {
             return _fileBundleLoader;
         }
+        
+        private IBundleLoader CreateBundleLoader(BundleInfo bundleInfo)
+        {
+            return _fileBundleLoader;
+        }
 
         public List<BundleRes> GetDependencies(BundleInfo bundleInfo)
         {
@@ -55,31 +62,6 @@ namespace AFramework.ResModule.BundleResources
             }
 
             return dependencies;
-        }
-    }
-    
-    public interface IBundleLoader
-    {
-        void LoadBundleAsync(BundleInfo bundleInfo, Action<AssetBundle> action);
-        AssetBundle LoadBundle(BundleInfo bundleInfo);
-    }
-
-    public class FileBundleLoader:IBundleLoader
-    {
-        //TODO 处理路径
-        public static string BundleRootPath = "D:/UnityProject/AFramework/Assets/StreamingAssets/bundles/";
-        public void LoadBundleAsync(BundleInfo bundleInfo, Action<AssetBundle> action)
-        {
-            var request = AssetBundle.LoadFromFileAsync(System.IO.Path.Combine(BundleRootPath, bundleInfo.FileName));
-            request.completed += operation =>
-            {
-                action?.Invoke(request.assetBundle);
-            };
-        }
-
-        public AssetBundle LoadBundle(BundleInfo bundleInfo)
-        {
-            return AssetBundle.LoadFromFile(System.IO.Path.Combine(BundleRootPath, bundleInfo.Name));
         }
     }
 }
