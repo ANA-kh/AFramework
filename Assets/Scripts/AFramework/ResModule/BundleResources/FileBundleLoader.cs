@@ -5,8 +5,6 @@ namespace AFramework.ResModule.BundleResources
 {
     public class FileBundleLoader:IBundleLoader
     {
-        //TODO 处理路径
-        public static string BundleRootPath = "D:/UnityProject/AFramework/Assets/StreamingAssets/bundles/";
         public void LoadBundleAsync(BundleInfo bundleInfo, Action<AssetBundle> action)
         {
             var request = AssetBundle.LoadFromFileAsync(GetAbsolutePath(bundleInfo));
