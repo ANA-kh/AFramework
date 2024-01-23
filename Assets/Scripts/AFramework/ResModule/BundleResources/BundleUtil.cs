@@ -20,10 +20,10 @@ namespace AFramework.ResModule.BundleResources
         
         public static string GetBasePath(BundleInfo bundleInfo)
         {
-            if (ExistsInStorableDirectory(bundleInfo.FileName))
+            if (ExistsInStorableDirectory(bundleInfo.Filename))
                 return StorableDirectory;
 
-            if (ExistsInReadOnlyDirectory(bundleInfo.FileName))
+            if (ExistsInReadOnlyDirectory(bundleInfo.Filename))
                 return ReadOnlyDirectory;
 
             return null;

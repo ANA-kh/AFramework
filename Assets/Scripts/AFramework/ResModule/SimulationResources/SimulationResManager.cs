@@ -1,5 +1,7 @@
+#if UNITY_EDITOR
 namespace AFramework.ResModule.SimulationResources
 {
+
     public class SimulationResManager : ResManager
     {
         protected override Res GetOrCreateRes(string path)
@@ -12,3 +14,4 @@ namespace AFramework.ResModule.SimulationResources
         }
     }
 }
+#endif

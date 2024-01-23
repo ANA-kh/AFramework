@@ -99,7 +99,7 @@ namespace AFramework.ResModule.BundleResources
         [SerializeField]
         private string filename;
         [SerializeField]
-        private string encoding;
+        private string encoding;            //编码方式
         [SerializeField]
         private bool published;
         [SerializeField]
@@ -113,6 +113,22 @@ namespace AFramework.ResModule.BundleResources
         public string[] Assets => assets;
         public bool Published => published;
         public string[] Dependencies => dependencies;
-        public string FileName => filename;
+        public string FullName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(variant))
+                    return name;
+
+                return string.Format("{0}.{1}", name, variant);
+            }
+        }
+        public long FileSize { get => fileSize; set => fileSize = value; }
+        public string Encoding { get => encoding; set => encoding = value; }
+        public string Filename { get => filename; set => filename = value; }
+        public string Hash { get => hash; set => hash = value; }
+        public uint CRC { get => crc; set => crc = value; }
+        public bool IsEncrypted { get => !string.IsNullOrEmpty(encoding); }
     }
+    
 }

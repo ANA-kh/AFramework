@@ -29,7 +29,7 @@ namespace AFramework.ResModule.BundleResources
 
             //TODO 提取到PathParser
             Uri baseUri = new Uri(basePath);
-            Uri uri = new Uri(baseUri, bundleInfo.FileName);
+            Uri uri = new Uri(baseUri, bundleInfo.Filename);
             string path = System.Uri.UnescapeDataString(uri.AbsolutePath);
             if (uri.Scheme.Equals("jar"))
                 path = path.Replace("file://", "jar:file://");
