@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using AFramework.ResModule.Utilities;
 using UnityEngine;
 
 namespace AFramework.ResModule.BundleResources
@@ -11,14 +12,23 @@ namespace AFramework.ResModule.BundleResources
         [SerializeField]
         private BundleInfo[] bundleInfos = null;
         [SerializeField]
-        private string defaultVariant = "";
-        [SerializeField]
         private string version;
 
         [NonSerialized]
         private Dictionary<string, BundleInfo> assetPath_BundleInfo;
         [NonSerialized]
         private Dictionary<string, BundleInfo> bundles = new Dictionary<string, BundleInfo>();
+        
+        public BundleManifest(List<BundleInfo> bundleInfos, string version)
+        {
+            if (bundleInfos != null)
+                this.bundleInfos = bundleInfos.ToArray();
+            else
+                this.bundleInfos = new BundleInfo[0];
+
+            this.version = version;
+        }
+        
 
         public BundleInfo[] GetDependencies(BundleInfo bundleInfo)
         {
@@ -34,12 +44,74 @@ namespace AFramework.ResModule.BundleResources
             return dependencies;
         }
         
+        public virtual BundleInfo[] GetDependencies(string bundleName, bool recursive)
+        {
+            BundleInfo info = this.GetBundleInfo(bundleName);
+            if (info == null)
+                return new BundleInfo[0];
+
+            List<BundleInfo> list = new List<BundleInfo>();
+            this.GetDependencies(info, info, recursive, list);
+            return list.ToArray();
+        }
+
+        protected virtual void GetDependencies(BundleInfo root, BundleInfo info, bool recursive, List<BundleInfo> list)
+        {
+            string[] dependencyNames = info.Dependencies;
+            if (dependencyNames == null || dependencyNames.Length <= 0)
+                return;
+
+            BundleInfo[] dependencies = this.GetBundleInfos(dependencyNames);
+            for (int i = 0; i < dependencies.Length; i++)
+            {
+                var dependency = dependencies[i];
+                if (dependency.Equals(root))
+                {
+                    Debug.LogWarning(string.Format("It has an loop reference between '{0}' and '{1}',it is recommended to redistribute their assets.", root.Name, info.Name));
+                    continue;
+                    //throw new LoopingReferenceException(string.Format("There is a error occurred.It has an unresolvable loop reference between '{0}' and '{1}'.", root.Name, info.Name));
+                }
+
+                if (list.Contains(dependency))
+                    continue;
+
+                list.Add(dependency);
+
+                if (recursive)
+                    this.GetDependencies(root, dependency, recursive, list);
+            }
+        }
+        
+        public virtual BundleInfo[] GetBundleInfos(params string[] bundleNames)
+        {
+            if (bundleNames == null || bundleNames.Length <= 0)
+                return new BundleInfo[0];
+
+            List<BundleInfo> list = new List<BundleInfo>();
+            for (int i = 0; i < bundleNames.Length; i++)
+            {
+                var name = Path.GetFilePathWithoutExtension(bundleNames[i]);
+                BundleInfo info;
+                if (bundles.TryGetValue(name, out info))
+                {
+                    if (info != null && !list.Contains(info))
+                        list.Add(info);
+                }
+            }
+            return list.ToArray();
+        }
+        
         private BundleInfo GetBundleInfo(string bundleName)
         {
             if (bundles.TryGetValue(bundleName, out var bundleInfo))
                 return bundleInfo;
             
             return null;
+        }
+        
+        public virtual BundleInfo[] GetAll()
+        {
+            return this.bundleInfos;
         }
         
         public BundleInfo GetBundleInfoByAssetPath(string path)
@@ -76,6 +148,11 @@ namespace AFramework.ResModule.BundleResources
 
         public void OnAfterDeserialize() { }
         
+        public virtual string ToJson()
+        {
+            return JsonUtility.ToJson(this);
+        }
+        
         public static BundleManifest Parse(string json)
         {
             return JsonUtility.FromJson<BundleManifest>(json);
@@ -108,6 +185,20 @@ namespace AFramework.ResModule.BundleResources
         private string[] assets = null;
         [SerializeField]
         private bool streamedScene;
+
+        public BundleInfo(string bundleName, string s, Hash128 hash128, uint u, long size, string filename1, bool b, string[] strings, string[] dependencies1, bool isStreamedScene)
+        {
+            name = bundleName;
+            variant = s;
+            hash = hash128.ToString();
+            crc = u;
+            fileSize = size;
+            filename = filename1;
+            published = b;
+            assets = strings;
+            dependencies = dependencies1;
+            streamedScene = isStreamedScene;
+        }
 
         public string Name => name;
         public string[] Assets => assets;

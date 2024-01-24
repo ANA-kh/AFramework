@@ -19,10 +19,11 @@
 | temporaryCachePath  | /storage/emulated/0/Android/data/package name/cache |
 
 streamingAssetsPath在Android上是被压缩打包进Apk包里的,没法直接用File类去读取的,可用UnityWebRequest去读取
+https://blog.csdn.net/Glow0129/article/details/104982681
 
 ```csharp
 //只能使用UnityWebRequest，无法使用file类进行操作
-string filePath = Application.dataPath + "/myFile.txt";
+string filePath = Application.streamingAssetsPath + "/myFile.txt";
 Uri uri = new Uri(filePath);  //这里使用uri可以简化很多操作，非常推荐，否则需要自己根据不同平台做处理
 UnityWebRequest request = UnityWebRequest.Get(uri);
 yield return request.SendWebRequest();
