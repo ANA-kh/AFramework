@@ -1,0 +1,7 @@
+ManifestFileVersion: 0
+CRC: 4080327714
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: assets_bundleresources_models_assets-hd_cube.prefab.bundle
+      Dependencies: {}
