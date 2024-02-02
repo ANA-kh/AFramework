@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if UNITY_EDITOR
+using System.Collections;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,14 +9,16 @@ namespace AFramework.ResModule.SimulationResources
     {
         private static string AssetRoot = "Assets/LoxodonFramework/BundleExamples";
         public SimulationRes(string path, IResManager resManager) : base(path, resManager) { }
+
         public override IRes Load()
         {
             _result = AssetDatabase.LoadAssetAtPath(GetFullPath(), typeof(Object));
             if (_result == null)
             {
-                Debug.LogException(new System.Exception($"Load asset failure.The asset named \"{GetFullPath()}\" is not found."));
+                Debug.LogException(
+                    new System.Exception($"Load asset failure.The asset named \"{GetFullPath()}\" is not found."));
             }
-            
+
             OnFinish();
             return this;
         }
@@ -39,14 +42,17 @@ namespace AFramework.ResModule.SimulationResources
         }
 
         protected override IEnumerator CoLoad()
-        { 
+        {
             _result = AssetDatabase.LoadAssetAtPath(GetFullPath(), typeof(Object));
             if (_result == null)
             {
-                Debug.LogException(new System.Exception($"Load asset failure.The asset named \"{GetFullPath()}\" is not found."));
+                Debug.LogException(
+                    new System.Exception($"Load asset failure.The asset named \"{GetFullPath()}\" is not found."));
             }
+
             OnFinish();
             yield break;
         }
     }
 }
+#endif

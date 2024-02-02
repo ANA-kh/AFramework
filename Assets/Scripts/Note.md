@@ -1,4 +1,20 @@
-﻿# unity资源路径在不同平台
+﻿# TODO
+打包策略
+着色器变种收集
+
+
+# tips
+##  AssetDatabase.GetDependencies和EditorUtility.CollectDependencies的区别 (待验证)
+> //1。 前者不会返回内置资源，后者会返回
+> //2。 前者不会返回重复的对象路径，后者会返回重复的对象
+> //3。 前者提供了返回直接依赖的方法，后者没有，会返回所有依赖
+> //注意，该方法AssetDatabase.GetDependencies可能会返回文件中存在的引用，但是实际上不需要的引用资源。最终的依赖资源还需要以EditorUtility.CollectDependencies的列表为准
+
+
+ScriptableBuildpipeline将打包的各个阶段暴露出来,可自定义打包
+
+
+# unity资源路径在不同平台
 ![Unity特殊文件夹在各个平台的差异总结](https://blog.csdn.net/Nbin_Newby/article/details/131458148)
 ## Windows
 

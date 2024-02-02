@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 namespace AFramework.ResModule.SimulationResources
 {
     public class SimulationResManager : ResManager
@@ -12,3 +13,4 @@ namespace AFramework.ResModule.SimulationResources
         }
     }
 }
+#endif
