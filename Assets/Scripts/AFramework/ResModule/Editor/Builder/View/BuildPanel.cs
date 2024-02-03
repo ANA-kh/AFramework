@@ -4,7 +4,7 @@ using UnityEditorInternal;
 using UnityEngine;
 using Path = System.IO.Path;
 
-namespace AFramework.Editor.Builder
+namespace AFramework.Editor.Builder.View
 {
     public class BuildPanel : EditorWindow
     {
@@ -40,7 +40,7 @@ namespace AFramework.Editor.Builder
 
         private void OnListElementGUI(Rect rect, int index, bool isActive, bool isFocused)
         {
-            //TODO 刷新显示有点延迟
+            //TODO uodo时显示刷新有延迟
             var element = _reorderableList.serializedProperty.GetArrayElementAtIndex(index);
             rect.y += 2;
 

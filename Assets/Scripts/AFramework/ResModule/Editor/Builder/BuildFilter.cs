@@ -70,7 +70,7 @@ namespace AFramework.Editor.Builder
 
         protected List<BuildAssetInfo> GetAllDependencies(string assetPath, string dependBundleName)
         {
-            string[] dependencies = AssetDatabase.GetDependencies(assetPath, false);
+            string[] dependencies = AssetDatabase.GetDependencies(assetPath, true);
             if (dependencies == null || dependencies.Length == 0)
                 return null;
 

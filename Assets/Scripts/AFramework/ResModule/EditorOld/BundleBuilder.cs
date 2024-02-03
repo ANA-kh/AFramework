@@ -385,4 +385,9 @@ namespace AFramework.ResModule.Editor
             bool IsValid(BundleInfo bundleInfo);
         }
     }
+
+    public class BuildPanel : EditorWindow
+    {
+        
+    }
 }

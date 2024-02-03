@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AFramework.Editor.Builder.BuildContext;
 using UnityEditor;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ namespace AFramework.Editor.Builder
 {
     public class BuildSO : ScriptableObject
     {
+        public BuildParameter BuildParameter = new BuildParameter();
         public List<BuildFilter> BuildFilters = new List<BuildFilter>();
         private static string DefaultPath = "Assets/Scripts/AFramework/Editor/Builder/BuildSO.asset";
 
