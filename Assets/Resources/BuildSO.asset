@@ -12,6 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25d3c95233c74dbdbc3c0695f6f0bce1, type: 3}
   m_Name: BuildSO
   m_EditorClassIdentifier: 
+  BuildParameter:
+    AppVersion: 0
+    ResVersion: 0
+    CompressOption: 0
+    BuildMode: 1
+    DisableWriteTypeTree: 1
+    IgnoreTypeTreeChanges: 1
   BuildFilters:
   - Active: 1
     Path: Assets/BundleResources/Models

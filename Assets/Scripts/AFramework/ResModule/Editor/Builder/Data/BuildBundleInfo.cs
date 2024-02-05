@@ -2,17 +2,24 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace AFramework.Editor.Builder
+namespace AFramework.ResModule.Editor.Builder
 {
     public class BuildBundleInfo
     {
         private HashSet<BuildAssetInfo> _buildAssetInfos = new HashSet<BuildAssetInfo>();
         public readonly string BundleName;
+        public bool Encrypt;
 
         public BuildBundleInfo(string bundleName)
         {
             BundleName = bundleName;
         }
+
+        public string UnityHash { get; set; }
+        public uint UnityCRC { get; set; }
+        public string FileHash { get; set; }
+        public string FileCRC { get; set; }
+        public long FileSize { get; set; }
 
         public void AddAssets(BuildAssetInfo buildAssetInfo)
         {
@@ -25,6 +32,13 @@ namespace AFramework.Editor.Builder
             if (!_buildAssetInfos.Add(buildAssetInfo))
             {
                 Debug.LogError($"[BuildBundleInfo] BuildAssetInfo is already existed.  :{buildAssetInfo.AssetPath}");
+            }
+            else
+            {
+                if (buildAssetInfo.Encrypt)
+                {
+                    Encrypt = true;
+                }
             }
         }
 

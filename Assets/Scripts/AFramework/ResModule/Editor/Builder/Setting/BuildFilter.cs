@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace AFramework.Editor.Builder
+namespace AFramework.ResModule.Editor.Builder
 {
     [Serializable]
     public class BuildFilter
@@ -15,6 +15,8 @@ namespace AFramework.Editor.Builder
         public string Path;
         public string Filter = "*.prefab";
         public CollectOption CollectOption = CollectOption.TopDirectory;
+        public bool Encrypt = false;
+        public BuildType BuildType = BuildType.AssetBundle;
 
         protected static string BundleExtension = ".bundle";
         protected static HashSet<string> IgnoreFileExtensions = new HashSet<string>()
@@ -77,6 +79,9 @@ namespace AFramework.Editor.Builder
             List<BuildAssetInfo> result = new List<BuildAssetInfo>();
             foreach (var dependency in dependencies)
             {
+                if (dependency == assetPath)
+                    continue;
+
                 BuildAssetInfo buildAssetInfo = new BuildAssetInfo(dependency, dependBundleName);
                 result.Add(buildAssetInfo);
             }
@@ -189,6 +194,12 @@ namespace AFramework.Editor.Builder
         }
 
         #endregion
+    }
+
+    public enum BuildType
+    {
+        Raw,
+        AssetBundle,
     }
 
     public enum CollectOption

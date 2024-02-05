@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 
-namespace AFramework.Editor.Builder
+namespace AFramework.ResModule.Editor.Builder
 {
     public class BuildAssetInfo
     {
@@ -21,6 +21,12 @@ namespace AFramework.Editor.Builder
             DependBundleNames = new HashSet<string> { dependBundleName };
         }
 
+        public BuildAssetInfo(string assetPath, string dependBundleName, bool encrypt) : this(assetPath,
+            dependBundleName)
+        {
+            Encrypt = encrypt;
+        }
+
         public string AssetPath;
         public string AssetGUID;
         public System.Type AssetType;
@@ -28,6 +34,7 @@ namespace AFramework.Editor.Builder
         /// 包名,决定了打进那个包
         /// </summary>
         public string BundleName;
+        public bool Encrypt;
         public List<BuildAssetInfo> DependAssets;
         public HashSet<string> DependBundleNames = new HashSet<string>();
     }

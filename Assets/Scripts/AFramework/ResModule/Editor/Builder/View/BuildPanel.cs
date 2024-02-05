@@ -4,7 +4,7 @@ using UnityEditorInternal;
 using UnityEngine;
 using Path = System.IO.Path;
 
-namespace AFramework.Editor.Builder.View
+namespace AFramework.ResModule.Editor.Builder.View
 {
     public class BuildPanel : EditorWindow
     {
@@ -80,7 +80,40 @@ namespace AFramework.Editor.Builder.View
             var buildFilters = _reorderableList.serializedProperty;
         }
 
+        private ToolbarTab _currentTab = ToolbarTab.Filter;
+        private readonly string[] _toolbarTexts = new string[] { "Filter", "Build" };
+
         private void OnGUI()
+        {
+            _currentTab = (ToolbarTab)GUILayout.Toolbar((int)_currentTab, _toolbarTexts);
+
+            switch (_currentTab)
+            {
+                case ToolbarTab.Filter:
+                    GUIFilter();
+                    break;
+                case ToolbarTab.Build:
+                    GUIBuild();
+                    break;
+            }
+        }
+
+        private void GUIBuild()
+        {
+            if (_buildSo == null)
+                return;
+
+            _serializedObject.Update();
+            EditorGUILayout.PropertyField(_serializedObject.FindProperty("BuildParameter"));
+            _serializedObject.ApplyModifiedProperties();
+            if (GUILayout.Button("Build"))
+            {
+                var builder = new BuildinBuildPipeline();
+                builder.DefaultBuild();
+            }
+        }
+
+        private void GUIFilter()
         {
             if (_buildSo == null || _reorderableList == null)
                 return;
@@ -88,6 +121,12 @@ namespace AFramework.Editor.Builder.View
             _serializedObject.Update();
             _reorderableList.DoLayoutList();
             _serializedObject.ApplyModifiedProperties();
+        }
+
+        private enum ToolbarTab
+        {
+            Filter,
+            Build,
         }
     }
 }

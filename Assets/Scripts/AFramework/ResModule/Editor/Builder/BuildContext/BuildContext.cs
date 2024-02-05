@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AFramework.Editor.Builder.BuildContext
+namespace AFramework.ResModule.Editor.Builder.BuildContext
 {
     public class BuildContext
     {

@@ -1,19 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
+using UnityEngine;
 
-namespace AFramework.Editor.Builder.BuildContext
+namespace AFramework.ResModule.Editor.Builder.BuildContext
 {
     public class BuildMap
     {
-        private Dictionary<string, BuildBundleInfo> _buildBundleInfos = new Dictionary<string, BuildBundleInfo>();
-        private Dictionary<string, BuildAssetInfo> _buildAssetInfos = new Dictionary<string, BuildAssetInfo>();
+        public Dictionary<string, BuildBundleInfo>
+            BuildBundleInfos = new Dictionary<string, BuildBundleInfo>(); //bundleName->BuildBundleInfo
+        private readonly List<BuildFilter> _buildFilters;
+
+        public BuildMap(List<BuildFilter> buildFilters)
+        {
+            _buildFilters = buildFilters.Where(x => x.Active).ToList();
+        }
 
         public AssetBundleBuild[] GetAssetBundleBuilds()
         {
             List<AssetBundleBuild> assetBundleBuilds = new List<AssetBundleBuild>();
-            foreach (var buildBundleInfo in _buildBundleInfos.Values)
+            foreach (var buildBundleInfo in BuildBundleInfos.Values)
             {
                 AssetBundleBuild assetBundleBuild = new AssetBundleBuild();
                 assetBundleBuild.assetBundleName = buildBundleInfo.BundleName;
@@ -28,9 +36,8 @@ namespace AFramework.Editor.Builder.BuildContext
         {
             Dictionary<string, BuildAssetInfo> mainAssets = new Dictionary<string, BuildAssetInfo>();
             Dictionary<string, BuildAssetInfo> dependAssets = new Dictionary<string, BuildAssetInfo>();
-            var buildSo = BuildSO.GetDefaultBuildSo();
             //1.收集所有资源  主要资源按规则打包.   
-            foreach (var buildFilter in buildSo.BuildFilters)
+            foreach (var buildFilter in _buildFilters)
             {
                 if (!buildFilter.Active)
                     continue;
@@ -47,7 +54,7 @@ namespace AFramework.Editor.Builder.BuildContext
                     {
                         if (mainAssets.ContainsKey(dependAsset.AssetGUID))
                             continue;
-                        
+
                         if (dependAssets.TryGetValue(dependAsset.AssetGUID, out var existDependAsset))
                         {
                             existDependAsset.DependBundleNames.UnionWith(buildAssetInfo.DependBundleNames);
@@ -59,6 +66,7 @@ namespace AFramework.Editor.Builder.BuildContext
                     }
                 }
             }
+
             //2.依赖资源自动打包(规则:若只被单个AssetBundle依赖,则打包到该AssetBundle中. 否则单独打包)
             foreach (var dependAssetInfo in dependAssets.Values)
             {
@@ -72,25 +80,36 @@ namespace AFramework.Editor.Builder.BuildContext
                     dependAssetInfo.BundleName = GetSharedBundleName(dependAssetInfo.AssetPath);
                 }
             }
-            
+
             //3.生成BuildBundleInfo
             Assert.NotNull(mainAssets);
             foreach (var buildAssetInfo in mainAssets.Values)
             {
                 PackAsset(buildAssetInfo);
             }
+
             foreach (var dependAssetInfo in dependAssets.Values)
             {
                 PackAsset(dependAssetInfo);
+            }
+
+            //4.检查资源名长度
+            foreach (var buildBundleInfo in BuildBundleInfos.Values)
+            {
+                var fileName = buildBundleInfo.BundleName;
+                if (fileName.Length > 260)
+                {
+                    throw new Exception($"BundleName is too long : {fileName}");
+                }
             }
         }
 
         private void PackAsset(BuildAssetInfo buildAssetInfo)
         {
-            if (!_buildBundleInfos.TryGetValue(buildAssetInfo.BundleName, out var buildBundleInfo))
+            if (!BuildBundleInfos.TryGetValue(buildAssetInfo.BundleName, out var buildBundleInfo))
             {
                 buildBundleInfo = new BuildBundleInfo(buildAssetInfo.BundleName);
-                _buildBundleInfos.Add(buildAssetInfo.BundleName, buildBundleInfo);
+                BuildBundleInfos.Add(buildAssetInfo.BundleName, buildBundleInfo);
             }
 
             buildBundleInfo.AddAssets(buildAssetInfo);
@@ -100,6 +119,32 @@ namespace AFramework.Editor.Builder.BuildContext
         {
             return $"shared_{assetPath.Replace('/', '_').ToLower()}";
         }
-        
+
+        /// <summary>
+        /// 比较生成后的manifest和自己收集的buildMap是否一致
+        /// </summary>
+        /// <param name="manifest"></param>
+        public void CheckManifest(AssetBundleManifest manifest)
+        {
+            var manifestBundleNames = manifest.GetAllAssetBundles();
+            var buildBundleNames = BuildBundleInfos.Keys.ToArray();
+            foreach (var manifestBundleName in manifestBundleNames)
+            {
+                if (!buildBundleNames.Contains(manifestBundleName))
+                {
+                    Debug.LogWarning($"manifest has bundle not in buildMap:{manifestBundleName}");
+                }
+            }
+
+            foreach (var buildBundleName in buildBundleNames)
+            {
+                if (!manifestBundleNames.Contains(buildBundleName))
+                {
+                    Debug.LogWarning($"buildMap has bundle not in manifest:{buildBundleName}");
+                }
+            }
+        }
+
+        public void CacheBundleInfos() { }
     }
 }
