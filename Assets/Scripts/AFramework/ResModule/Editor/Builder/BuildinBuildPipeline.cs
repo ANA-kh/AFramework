@@ -1,8 +1,10 @@
 ﻿using System;
 using AFramework.ResModule.Editor.Builder.BuildContext;
+using AFramework.ResModule.Setting;
 using AFramework.ResModule.Utilities;
 using UnityEditor;
 using UnityEngine;
+using FileUtil = AFramework.ResModule.Utilities.FileUtil;
 
 namespace AFramework.ResModule.Editor.Builder
 {
@@ -23,7 +25,9 @@ namespace AFramework.ResModule.Editor.Builder
             Build_CreateMap(buildContext);
             Building(buildContext);
             Build_Verify(buildContext);
+            //TODO 加密
             Build_GenerateManifest(buildContext);
+            //TODO 报告
             Build_CopyToOutput(buildContext);
             Build_Post(buildContext);
         }
@@ -65,31 +69,53 @@ namespace AFramework.ResModule.Editor.Builder
             buildMap.CheckManifest(manifest);
         }
 
-        // private void Build_Encrypt(BuildContext.BuildContext buildContext)
-        // {
-        //     var buildParameter = buildContext.GetContextObject<BuildParameter>();
-        //     var buildMap = buildContext.GetContextObject<BuildMap>();
-        //     
-        // }
-
         private void Build_GenerateManifest(BuildContext.BuildContext buildContext)
         {
             var buildMap = buildContext.GetContextObject<BuildMap>();
-            var manifest = buildContext.GetContextObject<AssetBundleManifest>();
             var buildParameter = buildContext.GetContextObject<BuildParameter>();
+            //补全buildBundleInfo信息.  CRC, FileHash, FileSize, Depends
+            var unityManifest = buildContext.GetContextObject<AssetBundleManifest>();
             foreach (var bundleInfo in buildMap.BuildBundleInfos.Values)
             {
                 var filePath = PathUtility.CombinePaths(buildParameter.BuildOutputCachePath, bundleInfo.BundleName);
-                bundleInfo.UnityHash = manifest.GetAssetBundleHash(bundleInfo.BundleName).ToString();
                 BuildPipeline.GetCRCForAssetBundle(filePath, out var UnityCRC);
                 bundleInfo.UnityCRC = UnityCRC;
                 bundleInfo.FileHash = HashUtility.FileCRC32(filePath);
                 bundleInfo.FileCRC = HashUtility.FileCRC32(filePath);
                 bundleInfo.FileSize = FileUtil.GetFileSize(filePath);
             }
+
+            buildMap.GenBundleDepends(unityManifest);
+
+            //生成manifest
+            var manifest = new Manifest();
+            manifest.AppVersion = buildParameter.AppVersion;
+            manifest.ResVersion = buildParameter.ResVersion;
+            buildMap.GetBuildInfo(out manifest.BundleInfos, out manifest.AssetInfos);
+
+            //保存manifest为文件
+            var outputDir = buildParameter.BuildOutputCachePath;
+            var manifestPath =
+                PathUtility.CombinePaths(outputDir, $"{BuildSetting.ManifestFileName}_{manifest.AppVersion}_{manifest.ResVersion}.json");
+            string json = JsonUtility.ToJson(manifest, true);
+            FileUtil.WriteAllText(manifestPath, json);
+            Debug.Log($"Generate manifest success : {manifestPath}");
+
+            //创建清单hash文件
+            var manifestHashPath =
+                PathUtility.CombinePaths(outputDir, $"{BuildSetting.ManifestFileName}_{manifest.AppVersion}_{manifest.ResVersion}.hash");
+            var hash = HashUtility.FileMD5(manifestPath);
+            FileUtil.WriteAllText(manifestHashPath, hash);
         }
 
-        private void Build_CopyToOutput(BuildContext.BuildContext buildContext) { }
+        private void Build_CopyToOutput(BuildContext.BuildContext buildContext)
+        {
+            //copy to destDir
+            var buildParameter = buildContext.GetContextObject<BuildParameter>();
+            var sourcePath = buildParameter.BuildOutputCachePath;
+            var destPath = buildParameter.CopyOutputPath;
+            FileUtil.CopyDirectory(sourcePath, destPath);
+        }
 
         private void Build_Post(BuildContext.BuildContext buildContext) { }
 

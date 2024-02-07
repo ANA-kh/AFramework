@@ -9,13 +9,13 @@ namespace AFramework.ResModule.Editor.Builder
         private HashSet<BuildAssetInfo> _buildAssetInfos = new HashSet<BuildAssetInfo>();
         public readonly string BundleName;
         public bool Encrypt;
+        public HashSet<string> DependBundleNames = new HashSet<string>();
 
         public BuildBundleInfo(string bundleName)
         {
             BundleName = bundleName;
         }
 
-        public string UnityHash { get; set; }
         public uint UnityCRC { get; set; }
         public string FileHash { get; set; }
         public string FileCRC { get; set; }
@@ -45,6 +45,11 @@ namespace AFramework.ResModule.Editor.Builder
         public string[] GetAssetNames()
         {
             return _buildAssetInfos.Select(info => info.AssetPath).ToArray();
+        }
+
+        public List<BuildAssetInfo> GetMainAssets()
+        {
+            return _buildAssetInfos.Where(x => x.IsMainAsset).ToList();
         }
     }
 }

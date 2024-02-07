@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 
@@ -27,6 +28,7 @@ namespace AFramework.ResModule.Editor.Builder
             Encrypt = encrypt;
         }
 
+        public bool IsMainAsset;
         public string AssetPath;
         public string AssetGUID;
         public System.Type AssetType;

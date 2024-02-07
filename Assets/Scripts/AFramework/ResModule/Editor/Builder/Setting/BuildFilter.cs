@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -63,6 +62,7 @@ namespace AFramework.ResModule.Editor.Builder
             {
                 BuildAssetInfo buildAssetInfo = new BuildAssetInfo(fileInfo.FullName);
                 buildAssetInfo.BundleName = GetAssetBundleName(fileInfo);
+                buildAssetInfo.IsMainAsset = true;
                 buildAssetInfo.DependAssets = GetAllDependencies(fileInfo.FullName, buildAssetInfo.BundleName);
                 result.Add(buildAssetInfo);
             }
@@ -188,7 +188,7 @@ namespace AFramework.ResModule.Editor.Builder
                 builds[i].assetNames = new string[] { assetPath };
             }
 
-            var outputPath = FileUtil.GetProjectPath() + "/ABundles";
+            var outputPath = AFramework.ResModule.Utilities.FileUtil.GetProjectPath() + "/ABundles";
             BuildPipeline.BuildAssetBundles(outputPath, builds, BuildAssetBundleOptions.None,
                 BuildTarget.StandaloneWindows);
         }

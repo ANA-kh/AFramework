@@ -1,9 +1,8 @@
 using System.IO;
-using AFramework.ResModule.Utilities;
+using System.Text;
 using UnityEngine;
-using Path = System.IO.Path;
 
-namespace AFramework.ResModule.Editor.Builder
+namespace AFramework.ResModule.Utilities
 {
     public static class FileUtil
     {
@@ -13,7 +12,7 @@ namespace AFramework.ResModule.Editor.Builder
         /// <returns></returns>
         public static string GetProjectPath()
         {
-            var projectPath = Path.GetDirectoryName(Application.dataPath);
+            var projectPath = System.IO.Path.GetDirectoryName(Application.dataPath);
             return PathUtility.GetRegularPath(projectPath);
         }
 
@@ -56,6 +55,36 @@ namespace AFramework.ResModule.Editor.Builder
         {
             FileInfo fileInfo = new FileInfo(filePath);
             return fileInfo.Length;
+        }
+
+        public static void WriteAllText(string filePath, string content)
+        {
+            CreateDirectory(filePath);
+
+            byte[] bytes = Encoding.UTF8.GetBytes(content);
+            File.WriteAllBytes(filePath, bytes); //避免写入BOM标记
+        }
+
+        public static void CopyDirectory(string sourceDir, string destDir, bool recursive = false)
+        {
+            CreateDirectory(destDir);
+
+            // copy files
+            foreach (string file in Directory.GetFiles(sourceDir))
+            {
+                string destFile = PathUtility.CombinePaths(destDir, Path.GetFileName(file));
+                File.Copy(file, destFile, true);
+            }
+
+            // Recursively copy all subDirectories.
+            if (recursive)
+            {
+                foreach (string dir in Directory.GetDirectories(sourceDir))
+                {
+                    string destDir2 = PathUtility.CombinePaths(destDir, Path.GetFileName(dir));
+                    CopyDirectory(dir, destDir2, true);
+                }
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using AFramework.ResModule.Editor;
+using AFramework.ResModule.Setting;
 using UnityEditor;
 using UnityEngine;
 
@@ -112,7 +112,7 @@ namespace AFramework.ResModule.Editor.Builder.BuildContext
 
             if (BuildMode == BuildMode.ForceRebuild)
             {
-                if (FileUtil.DeleteDirectory(BuildOutputCachePath))
+                if (AFramework.ResModule.Utilities.FileUtil.DeleteDirectory(BuildOutputCachePath))
                 {
                     Debug.Log("Delete build root directory: " + BuildOutputCachePath);
                 }
@@ -120,7 +120,7 @@ namespace AFramework.ResModule.Editor.Builder.BuildContext
 
             if (!Directory.Exists(BuildOutputCachePath))
             {
-                if (FileUtil.CreateDirectory(BuildOutputCachePath))
+                if (AFramework.ResModule.Utilities.FileUtil.CreateDirectory(BuildOutputCachePath))
                 {
                     Debug.Log("Create build root directory: " + BuildOutputCachePath);
                 }

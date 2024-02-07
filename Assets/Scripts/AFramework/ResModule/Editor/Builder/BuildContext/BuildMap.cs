@@ -10,7 +10,7 @@ namespace AFramework.ResModule.Editor.Builder.BuildContext
     public class BuildMap
     {
         public Dictionary<string, BuildBundleInfo>
-            BuildBundleInfos = new Dictionary<string, BuildBundleInfo>(); //bundleName->BuildBundleInfo
+            BuildBundleInfos = new Dictionary<string, BuildBundleInfo>(); //bundleName->BuildBundleInfo]]]]]]]]]]]]]]]]]]]]]
         private readonly List<BuildFilter> _buildFilters;
 
         public BuildMap(List<BuildFilter> buildFilters)
@@ -145,6 +145,73 @@ namespace AFramework.ResModule.Editor.Builder.BuildContext
             }
         }
 
-        public void CacheBundleInfos() { }
+        public void GetBuildInfo(out List<BundleInfo> bundleInfos, out List<AssetInfo> assetInfos) //TODO manifest传进来有点怪,此函数考虑移到外面(buildTask)
+        {
+            bundleInfos = new List<BundleInfo>();
+            assetInfos = new List<AssetInfo>();
+
+            //使用id表示依赖,名字str太长
+            var cacheBundleID = new Dictionary<string, int>();
+            foreach (var value in BuildBundleInfos.Values)
+            {
+                var bundleInfo = new BundleInfo();
+                bundleInfo.BundleName = value.BundleName;
+                bundleInfo.UnityCRC = value.UnityCRC;
+                bundleInfo.FileHash = value.FileHash;
+                bundleInfo.FileCRC = value.FileCRC;
+                bundleInfo.FileSize = value.FileSize;
+                bundleInfo.Encrypted = value.Encrypt;
+                bundleInfos.Add(bundleInfo);
+                cacheBundleID.Add(value.BundleName, bundleInfos.Count - 1);
+            }
+
+            foreach (var value in BuildBundleInfos.Values)
+            {
+                var bundleInfo = bundleInfos[cacheBundleID[value.BundleName]];
+                bundleInfo.DependBundleIDs = value.DependBundleNames.Select(x => cacheBundleID[x]).ToArray();
+            }
+
+            foreach (var value in BuildBundleInfos.Values)
+            {
+                foreach (var buildAssetInfo in value.GetMainAssets())
+                {
+                    var assetInfo = new AssetInfo();
+                    assetInfo.AssetPath = buildAssetInfo.AssetPath;
+                    assetInfo.BundleID = cacheBundleID[value.BundleName];
+                    assetInfos.Add(assetInfo);
+                }
+            }
+        }
+
+        public void GenBundleDepends(AssetBundleManifest manifest)
+        {
+            foreach (var buildBundleInfo in BuildBundleInfos.Values)
+            {
+                var myDepends = new HashSet<string>();
+                foreach (var buildAssetInfo in buildBundleInfo.GetMainAssets())
+                {
+                    myDepends.UnionWith(buildAssetInfo.DependBundleNames);
+                }
+
+                var unityDepends = manifest.GetDirectDependencies(buildBundleInfo.BundleName);
+                var uniqueInUnityDepends = unityDepends.Except(myDepends);
+
+                var uniqueInDependBundleNames = myDepends.Except(unityDepends);
+
+                Debug.LogWarning("Unique in unityDepends:");
+                foreach (var str in uniqueInUnityDepends)
+                {
+                    Debug.LogWarning(str);
+                }
+
+                Debug.LogWarning("Unique in myDepends:");
+                foreach (var str in uniqueInDependBundleNames)
+                {
+                    Debug.LogWarning(str);
+                }
+
+                buildBundleInfo.DependBundleNames = new HashSet<string>(unityDepends);
+            }
+        }
     }
 }
