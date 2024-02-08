@@ -17,6 +17,26 @@ namespace AFramework.ResModule.Utilities
         }
 
         /// <summary>
+        /// 绝对路径转unity工程相对路径  D:/x/x/Assets/x -> Assets/x
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string AbsolutePathToAssetPath(string path)
+        {
+            return PathUtility.GetRegularPath(path).Replace(Application.dataPath, "Assets");
+        }
+
+        /// <summary>
+        /// unity工程相对路径转绝对路径  Assets/x -> D:/x/x/Assets/x
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string AssetPathToAbsolutePath(string path)
+        {
+            return PathUtility.CombinePaths(GetProjectPath(), PathUtility.GetRegularPath(path));
+        }
+
+        /// <summary>
         /// 创建文件夹
         /// </summary>
         public static bool CreateDirectory(string directory)
@@ -59,14 +79,21 @@ namespace AFramework.ResModule.Utilities
 
         public static void WriteAllText(string filePath, string content)
         {
-            CreateDirectory(filePath);
+            CreateDirectory(System.IO.Path.GetDirectoryName(filePath));
 
             byte[] bytes = Encoding.UTF8.GetBytes(content);
             File.WriteAllBytes(filePath, bytes); //避免写入BOM标记
         }
 
+        /// <summary>
+        /// 拷贝文件夹,如果目标文件夹存在,则会删除
+        /// </summary>
+        /// <param name="sourceDir"></param>
+        /// <param name="destDir"></param>
+        /// <param name="recursive"></param>
         public static void CopyDirectory(string sourceDir, string destDir, bool recursive = false)
         {
+            DeleteDirectory(destDir);
             CreateDirectory(destDir);
 
             // copy files

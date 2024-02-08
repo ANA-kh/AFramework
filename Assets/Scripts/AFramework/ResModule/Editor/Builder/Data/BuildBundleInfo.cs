@@ -1,25 +1,30 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace AFramework.ResModule.Editor.Builder
 {
-    public class BuildBundleInfo
+    [Serializable]
+    public class BuildBundleInfo : ISerializationCallbackReceiver
     {
-        private HashSet<BuildAssetInfo> _buildAssetInfos = new HashSet<BuildAssetInfo>();
-        public readonly string BundleName;
+        public string BundleName;
+        public uint UnityCRC;
+        public string FileHash;
+        public string FileCRC;
+        public long FileSize;
         public bool Encrypt;
         public HashSet<string> DependBundleNames = new HashSet<string>();
+        private HashSet<BuildAssetInfo> _buildAssetInfos = new HashSet<BuildAssetInfo>();
+        [SerializeField]
+        private string[] _dependBundleNames;
+        [SerializeField]
+        private string[] _assetNames;
 
         public BuildBundleInfo(string bundleName)
         {
             BundleName = bundleName;
         }
-
-        public uint UnityCRC { get; set; }
-        public string FileHash { get; set; }
-        public string FileCRC { get; set; }
-        public long FileSize { get; set; }
 
         public void AddAssets(BuildAssetInfo buildAssetInfo)
         {
@@ -51,5 +56,13 @@ namespace AFramework.ResModule.Editor.Builder
         {
             return _buildAssetInfos.Where(x => x.IsMainAsset).ToList();
         }
+
+        public void OnBeforeSerialize()
+        {
+            _dependBundleNames = DependBundleNames.ToArray();
+            _assetNames = _buildAssetInfos.Select(info => info.AssetPath).ToArray();
+        }
+
+        public void OnAfterDeserialize() { }
     }
 }

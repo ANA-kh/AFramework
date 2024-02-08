@@ -1,11 +1,29 @@
 using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine;
 
 namespace AFramework.ResModule.Editor.Builder
 {
-    public class BuildAssetInfo
+    [Serializable]
+    public class BuildAssetInfo : ISerializationCallbackReceiver
     {
+        public bool IsMainAsset;
+        public string AssetPath;
+        public string AssetGUID;
+        public System.Type AssetType;
+        /// <summary>
+        /// 包名,决定了打进那个包
+        /// </summary>
+        public string BundleName;
+        private string[] _dependAssetNames;
+
+        [NonSerialized]
+        public bool Encrypt;
+        [NonSerialized]
+        public List<BuildAssetInfo> DependAssets;
+        public HashSet<string> DependBundleNames = new HashSet<string>();
+
         public BuildAssetInfo(string assetPath)
         {
             AssetPath = assetPath;
@@ -28,16 +46,14 @@ namespace AFramework.ResModule.Editor.Builder
             Encrypt = encrypt;
         }
 
-        public bool IsMainAsset;
-        public string AssetPath;
-        public string AssetGUID;
-        public System.Type AssetType;
-        /// <summary>
-        /// 包名,决定了打进那个包
-        /// </summary>
-        public string BundleName;
-        public bool Encrypt;
-        public List<BuildAssetInfo> DependAssets;
-        public HashSet<string> DependBundleNames = new HashSet<string>();
+        public void OnBeforeSerialize()
+        {
+            _dependAssetNames = DependAssets?.ConvertAll(x => x.AssetPath).ToArray();
+        }
+
+        public void OnAfterDeserialize()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

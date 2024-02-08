@@ -1,5 +1,7 @@
 ﻿.idea/
 
+ABundles/*
+
 Assets/StreamingAssets
 Assets/StreamingAssets.meta
 

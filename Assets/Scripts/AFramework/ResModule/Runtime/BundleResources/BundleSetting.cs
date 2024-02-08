@@ -42,6 +42,7 @@ namespace AFramework.ResModule.BundleResources
 
         public static string RootDir = "Product"; //访问资源时的根目录.   persistentDataPath/RootDir   streamingAssetsPath/RootDir
         public static string ManifestFilename = "manifest.json";
+        public static string ReportFilename = "report.json";
 
         public static string StreamingAssetsRoot => PathUtility.CombinePaths(Application.streamingAssetsPath, RootDir);
 

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BuildParameter:
     AppVersion: 1
-    ResVersion: 1
+    ResVersion: 3
     CompressOption: 1
     BuildMode: 0
   BuildFilters:

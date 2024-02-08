@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using AFramework.ResModule.BundleResources;
 using AFramework.ResModule.Editor.Builder.BuildContext;
 using AFramework.ResModule.Setting;
@@ -28,7 +30,7 @@ namespace AFramework.ResModule.Editor.Builder
             Build_Verify(buildContext);
             //TODO 加密
             Build_GenerateManifest(buildContext);
-            //TODO 报告
+            Build_GenerateReport(buildContext);
             Build_CopyToOutput(buildContext);
             Build_Post(buildContext);
         }
@@ -49,6 +51,8 @@ namespace AFramework.ResModule.Editor.Builder
 
         private void Building(BuildContext.BuildContext buildContext)
         {
+            //TODO outputCache文件夹下只放unity生成的文件
+
             BuildParameter buildParameter = buildContext.GetContextObject<BuildParameter>();
             BuildMap buildMap = buildContext.GetContextObject<BuildMap>();
             var assetbundleBuilds = buildMap.GetAssetBundleBuilds();
@@ -108,6 +112,23 @@ namespace AFramework.ResModule.Editor.Builder
             FileUtil.WriteAllText(manifestHashPath, hash);
         }
 
+        private void Build_GenerateReport(BuildContext.BuildContext buildContext)
+        {
+            var report = new BuildReport();
+            var buildMap = buildContext.GetContextObject<BuildMap>();
+            var buildResult = buildContext.GetContextObject<AssetBundleManifest>();
+            var buildParameter = buildContext.GetContextObject<BuildParameter>();
+            report.AppVersion = buildParameter.AppVersion;
+            report.ResVersion = buildParameter.ResVersion;
+            report.AssetInfos = buildMap.AllAssetInfos;
+            report.BundleInfos = buildMap.BuildBundleInfos.Values.ToList();
+
+            var outputDir = buildParameter.BuildOutputCachePath;
+            var reportPath = PathUtility.CombinePaths(outputDir, BundleSetting.ReportFilename);
+            FileUtil.WriteAllText(reportPath, JsonUtility.ToJson(report, true));
+            Debug.Log($"Generate report success : {reportPath}");
+        }
+
         private void Build_CopyToOutput(BuildContext.BuildContext buildContext)
         {
             //copy to destDir
@@ -117,21 +138,30 @@ namespace AFramework.ResModule.Editor.Builder
             FileUtil.CopyDirectory(sourcePath, destPath);
 
             //copy to streamingAssets  TODO 那些要copy到streamingAssets的文件  独立为单独流程
-            CopyToStreamingAssets();
+            CopyAssetsToBuiltin();
         }
 
         private void Build_Post(BuildContext.BuildContext buildContext) { }
 
         #endregion
 
-        [MenuItem("AFramework/CopyToStreamingAssets")]
-        public static void CopyToStreamingAssets()
+        [MenuItem("AFramework/CopyAssetsToBuiltin")]
+        public static void CopyAssetsToBuiltin()
         {
             var buildSo = BuildSO.GetDefaultBuildSo();
             var buildParameter = buildSo.BuildParameter;
             var sourcePath = buildParameter.CopyOutputPath;
             var destPath = BundleSetting.StreamingAssetsRoot;
             FileUtil.CopyDirectory(sourcePath, destPath);
+
+            var manifestPath = PathUtility.CombinePaths(destPath, BundleSetting.ManifestFilename);
+            var resourcesPath = PathUtility.CombinePaths(Application.dataPath, "Resources", BundleSetting.ManifestFilename);
+            if (File.Exists(resourcesPath))
+            {
+                File.Delete(resourcesPath);
+            }
+
+            File.Move(manifestPath, resourcesPath);
         }
     }
 }

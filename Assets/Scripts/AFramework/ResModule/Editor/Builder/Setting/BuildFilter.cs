@@ -4,6 +4,7 @@ using System.IO;
 using AFramework.ResModule.Utilities;
 using UnityEditor;
 using UnityEngine;
+using FileUtil = AFramework.ResModule.Utilities.FileUtil;
 using Object = UnityEngine.Object;
 
 namespace AFramework.ResModule.Editor.Builder
@@ -61,10 +62,11 @@ namespace AFramework.ResModule.Editor.Builder
             List<BuildAssetInfo> result = new List<BuildAssetInfo>();
             foreach (var fileInfo in fileInfos)
             {
-                BuildAssetInfo buildAssetInfo = new BuildAssetInfo(PathUtility.GetRegularPath(fileInfo.FullName));
+                var unityPath = FileUtil.AbsolutePathToAssetPath(fileInfo.FullName);
+                BuildAssetInfo buildAssetInfo = new BuildAssetInfo(unityPath);
                 buildAssetInfo.BundleName = GetAssetBundleName(fileInfo);
                 buildAssetInfo.IsMainAsset = true;
-                buildAssetInfo.DependAssets = GetAllDependencies(fileInfo.FullName, buildAssetInfo.BundleName);
+                buildAssetInfo.DependAssets = GetAllDependencies(unityPath, buildAssetInfo.BundleName);
                 result.Add(buildAssetInfo);
             }
 
@@ -103,19 +105,20 @@ namespace AFramework.ResModule.Editor.Builder
             switch (CollectOption)
             {
                 case CollectOption.TopDirectory:
-                    result = $"{Path.Replace('/', '_').ToLower()}{BundleExtension}";
+                    result = Path; //$"{Path.Replace('/', '_').ToLower()}{BundleExtension}";
                     break;
                 case CollectOption.EachDirectory:
-                    result = $"{fileInfo.DirectoryName.Replace('/', '_').ToLower()}{BundleExtension}";
+                    result = fileInfo.DirectoryName; //$"{fileInfo.DirectoryName.Replace('/', '_').ToLower()}{BundleExtension}";
                     break;
                 case CollectOption.EachFile:
-                    result = $"{fileInfo.FullName.Replace('/', '_').ToLower()}{BundleExtension}";
+                    result = fileInfo.FullName; //$"{fileInfo.FullName.Replace('/', '_').ToLower()}{BundleExtension}";
                     break;
                 default:
                     result = "";
                     break;
             }
 
+            result = Utilities.FileUtil.AbsolutePathToAssetPath(result).Replace('/', '_').ToLower() + BundleExtension;
             return result;
         }
 

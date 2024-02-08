@@ -1,4 +1,5 @@
 using System;
+using AFramework.ResModule.Utilities;
 using UnityEngine;
 
 namespace AFramework.ResModule.BundleResources
@@ -24,9 +25,9 @@ namespace AFramework.ResModule.BundleResources
                 throw new Exception("bundle not exist");
             }
 
-            //TODO 提取到PathParser
+            //TODO 提取到PathParser   进行真机路径测试,记录结论
             Uri baseUri = new Uri(basePath);
-            Uri uri = new Uri(baseUri, bundleInfo.BundleName);
+            Uri uri = new Uri(PathUtility.CombinePaths(basePath, bundleInfo.BundleName));
             string path = System.Uri.UnescapeDataString(uri.AbsolutePath);
             if (uri.Scheme.Equals("jar"))
                 path = path.Replace("file://", "jar:file://");

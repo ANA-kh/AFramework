@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using AFramework.ResModule.Utilities;
 using UnityEngine;
 
 namespace AFramework.ResModule.BundleResources
@@ -29,8 +30,8 @@ namespace AFramework.ResModule.BundleResources
             }
             else
             {
-                var text = Resources.Load<TextAsset>(BundleSetting.ManifestFilename);
-                if (text)
+                var text = Resources.Load<TextAsset>(PathUtility.RemoveExtension(BundleSetting.ManifestFilename));
+                if (text == null)
                 {
                     //沙河和builtin都没有manifest文件,需要重装app了
                     throw new Exception("Manifest file not found");

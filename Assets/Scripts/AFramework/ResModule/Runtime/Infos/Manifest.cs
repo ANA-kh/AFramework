@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace AFramework.ResModule
 {
+    [Serializable]
     public class BundleInfo
     {
         public string BundleName; //带后缀的全名
@@ -14,6 +15,7 @@ namespace AFramework.ResModule
         public int[] DependBundleIDs;
     }
 
+    [Serializable]
     public class AssetInfo
     {
         public string AssetPath;

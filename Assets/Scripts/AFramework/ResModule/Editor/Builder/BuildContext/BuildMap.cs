@@ -12,6 +12,7 @@ namespace AFramework.ResModule.Editor.Builder.BuildContext
         public Dictionary<string, BuildBundleInfo>
             BuildBundleInfos = new Dictionary<string, BuildBundleInfo>(); //bundleName->BuildBundleInfo]]]]]]]]]]]]]]]]]]]]]
         private readonly List<BuildFilter> _buildFilters;
+        public List<BuildAssetInfo> AllAssetInfos;
 
         public BuildMap(List<BuildFilter> buildFilters)
         {
@@ -50,6 +51,9 @@ namespace AFramework.ResModule.Editor.Builder.BuildContext
                 //收集依赖资源,并合并依赖包名
                 foreach (var buildAssetInfo in buildAssetInfos)
                 {
+                    if (buildAssetInfo.DependAssets == null)
+                        continue;
+
                     foreach (var dependAsset in buildAssetInfo.DependAssets)
                     {
                         if (mainAssets.ContainsKey(dependAsset.AssetGUID))
@@ -80,6 +84,8 @@ namespace AFramework.ResModule.Editor.Builder.BuildContext
                     dependAssetInfo.BundleName = GetSharedBundleName(dependAssetInfo.AssetPath);
                 }
             }
+
+            AllAssetInfos = mainAssets.Values.Concat(dependAssets.Values).ToList();
 
             //3.生成BuildBundleInfo
             Assert.NotNull(mainAssets);
@@ -198,16 +204,14 @@ namespace AFramework.ResModule.Editor.Builder.BuildContext
 
                 var uniqueInDependBundleNames = myDepends.Except(unityDepends);
 
-                Debug.LogWarning("Unique in unityDepends:");
                 foreach (var str in uniqueInUnityDepends)
                 {
-                    Debug.LogWarning(str);
+                    Debug.LogWarning($"Unique in unityDepends: {str}");
                 }
 
-                Debug.LogWarning("Unique in myDepends:");
                 foreach (var str in uniqueInDependBundleNames)
                 {
-                    Debug.LogWarning(str);
+                    Debug.LogWarning($"Unique in myDepends: {str}");
                 }
 
                 buildBundleInfo.DependBundleNames = new HashSet<string>(unityDepends);
