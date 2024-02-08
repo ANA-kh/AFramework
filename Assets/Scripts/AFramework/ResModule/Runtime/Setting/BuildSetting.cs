@@ -1,4 +1,5 @@
 using AFramework.ResModule.Utilities;
+using UnityEngine;
 
 namespace AFramework.ResModule.Setting
 {
@@ -8,9 +9,13 @@ namespace AFramework.ResModule.Setting
 
         public static string ManifestFileName = "Manifest"; //Manifest文件名
 
+        /// <summary>
+        /// 打包文件的存储目录
+        /// </summary>
+        /// <returns></returns>
         public static string DefaultBuildOutputRoot()
         {
-            return $"{FileUtil.GetProjectPath()}/ABundles";
+            return $"{FileUtil.GetProjectPath()}/ABundles"; //  AFramework/ABundles
         }
     }
 }

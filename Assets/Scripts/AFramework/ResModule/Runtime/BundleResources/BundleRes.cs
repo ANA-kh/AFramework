@@ -12,12 +12,13 @@ namespace AFramework.ResModule.BundleResources
         protected BundleManager BundleManager;
         private AssetBundle _assetBundle;
         public override Object Result => _assetBundle;
-        
+
         public BundleRes(string path, BundleManager resManager, BundleInfo bundleInfo) : base(path, resManager)
         {
             BundleManager = resManager;
             BundleInfo = bundleInfo;
         }
+
         public override IRes Load()
         {
             IBundleLoader loader = BundleManager.GetBundleLoader(BundleInfo);
@@ -28,6 +29,7 @@ namespace AFramework.ResModule.BundleResources
             {
                 res.Load();
             }
+
             OnFinish();
             return this;
         }
@@ -36,17 +38,17 @@ namespace AFramework.ResModule.BundleResources
         {
             IBundleLoader loader = BundleManager.GetBundleLoader(BundleInfo);
             var selfLoadDown = false;
-            loader.LoadBundleAsync(BundleInfo,result =>
+            loader.LoadBundleAsync(BundleInfo, result =>
             {
                 _assetBundle = result;
                 _result = result;
                 selfLoadDown = true;
             });
-            
+
             List<BundleRes> denpendencies = BundleManager.GetDependencies(BundleInfo);
             if (denpendencies.Count > 0)
             {
-                //异步加载时,避免依赖资源和依赖资源的依赖资源都在同一帧开协程
+                //异步加载时,避免依赖资源和依赖资源的依赖资源都在同一帧开协程   依赖链很长时可能造成问题
                 yield return null;
                 foreach (var res in denpendencies)
                 {
@@ -72,24 +74,23 @@ namespace AFramework.ResModule.BundleResources
                 //如果有依赖加载失败,并不会设置自己也加载失败.
                 if (_assetBundle == null)
                     Debug.LogException(new Exception(
-                        $"Load asset bundle failure.The asset bundle named \"{BundleInfo.Name}\" is not found."));
-
-                
+                        $"Load asset bundle failure.The asset bundle named \"{BundleInfo.BundleName}\" is not found."));
             }
-           
+
             while (!selfLoadDown)
             {
                 yield return null;
             }
+
             OnFinish();
         }
 
         public Object LoadAsset(string path)
         {
             Check();
-            if(string.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path))
                 throw new Exception("path is null or empty");
-            
+
             var fullName = GetFullName(path);
             return _assetBundle.LoadAsset(fullName);
         }
@@ -99,16 +100,13 @@ namespace AFramework.ResModule.BundleResources
             try
             {
                 Check();
-                if(string.IsNullOrEmpty(path))
+                if (string.IsNullOrEmpty(path))
                     throw new Exception("path is null or empty");
-                
+
                 AssetBundleRequest request;
                 var fullName = GetFullName(path);
                 request = _assetBundle.LoadAssetAsync(fullName);
-                request.completed += operation =>
-                {
-                    onFinish?.Invoke(request.asset);
-                };
+                request.completed += operation => { onFinish?.Invoke(request.asset); };
             }
             catch (Exception e)
             {
@@ -116,7 +114,8 @@ namespace AFramework.ResModule.BundleResources
                 onFinish?.Invoke(null);
             }
         }
-        protected  void Check()
+
+        protected void Check()
         {
             if (this._disposed)
                 throw new System.ObjectDisposedException(this._path);
@@ -124,9 +123,11 @@ namespace AFramework.ResModule.BundleResources
             if (!this.IsDone || this._assetBundle == null)
                 throw new System.Exception(string.Format("The AssetBundle '{0}' isn't ready.", this._path));
         }
+
         private const string ASSETS = "Assets/";
-        protected  string GetFullName(string name)
-        {   
+
+        protected string GetFullName(string name)
+        {
             //TODO 删除 
             if (name.StartsWith(ASSETS, System.StringComparison.OrdinalIgnoreCase) || name.IndexOf("/") < 0)
                 return name;

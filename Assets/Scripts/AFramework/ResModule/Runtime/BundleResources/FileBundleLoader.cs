@@ -3,22 +3,19 @@ using UnityEngine;
 
 namespace AFramework.ResModule.BundleResources
 {
-    public class FileBundleLoader:IBundleLoader
+    public class FileBundleLoader : IBundleLoader
     {
         public void LoadBundleAsync(BundleInfo bundleInfo, Action<AssetBundle> action)
         {
             var request = AssetBundle.LoadFromFileAsync(GetAbsolutePath(bundleInfo));
-            request.completed += operation =>
-            {
-                action?.Invoke(request.assetBundle);
-            };
+            request.completed += operation => { action?.Invoke(request.assetBundle); };
         }
 
         public AssetBundle LoadBundle(BundleInfo bundleInfo)
         {
             return AssetBundle.LoadFromFile(GetAbsolutePath(bundleInfo));
         }
-        
+
         public string GetAbsolutePath(BundleInfo bundleInfo)
         {
             var basePath = BundleUtil.GetBasePath(bundleInfo);
@@ -29,7 +26,7 @@ namespace AFramework.ResModule.BundleResources
 
             //TODO 提取到PathParser
             Uri baseUri = new Uri(basePath);
-            Uri uri = new Uri(baseUri, bundleInfo.Filename);
+            Uri uri = new Uri(baseUri, bundleInfo.BundleName);
             string path = System.Uri.UnescapeDataString(uri.AbsolutePath);
             if (uri.Scheme.Equals("jar"))
                 path = path.Replace("file://", "jar:file://");

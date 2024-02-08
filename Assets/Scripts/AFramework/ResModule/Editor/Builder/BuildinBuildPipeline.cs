@@ -1,4 +1,5 @@
 ﻿using System;
+using AFramework.ResModule.BundleResources;
 using AFramework.ResModule.Editor.Builder.BuildContext;
 using AFramework.ResModule.Setting;
 using AFramework.ResModule.Utilities;
@@ -95,8 +96,7 @@ namespace AFramework.ResModule.Editor.Builder
 
             //保存manifest为文件
             var outputDir = buildParameter.BuildOutputCachePath;
-            var manifestPath =
-                PathUtility.CombinePaths(outputDir, $"{BuildSetting.ManifestFileName}_{manifest.AppVersion}_{manifest.ResVersion}.json");
+            var manifestPath = PathUtility.CombinePaths(outputDir, BundleSetting.ManifestFilename);
             string json = JsonUtility.ToJson(manifest, true);
             FileUtil.WriteAllText(manifestPath, json);
             Debug.Log($"Generate manifest success : {manifestPath}");
@@ -115,10 +115,23 @@ namespace AFramework.ResModule.Editor.Builder
             var sourcePath = buildParameter.BuildOutputCachePath;
             var destPath = buildParameter.CopyOutputPath;
             FileUtil.CopyDirectory(sourcePath, destPath);
+
+            //copy to streamingAssets  TODO 那些要copy到streamingAssets的文件  独立为单独流程
+            CopyToStreamingAssets();
         }
 
         private void Build_Post(BuildContext.BuildContext buildContext) { }
 
         #endregion
+
+        [MenuItem("AFramework/CopyToStreamingAssets")]
+        public static void CopyToStreamingAssets()
+        {
+            var buildSo = BuildSO.GetDefaultBuildSo();
+            var buildParameter = buildSo.BuildParameter;
+            var sourcePath = buildParameter.CopyOutputPath;
+            var destPath = BundleSetting.StreamingAssetsRoot;
+            FileUtil.CopyDirectory(sourcePath, destPath);
+        }
     }
 }

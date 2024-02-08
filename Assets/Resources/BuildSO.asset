@@ -13,22 +13,26 @@ MonoBehaviour:
   m_Name: BuildSO
   m_EditorClassIdentifier: 
   BuildParameter:
-    AppVersion: 0
-    ResVersion: 0
-    CompressOption: 0
-    BuildMode: 1
-    DisableWriteTypeTree: 1
-    IgnoreTypeTreeChanges: 1
+    AppVersion: 1
+    ResVersion: 1
+    CompressOption: 1
+    BuildMode: 0
   BuildFilters:
   - Active: 1
     Path: Assets/BundleResources/Models
     Filter: '*.prefab'
     CollectOption: 1
+    Encrypt: 0
+    BuildType: 1
   - Active: 0
     Path: Assets/BundleResources/Models/Plane
     Filter: '*.prefab'
     CollectOption: 0
+    Encrypt: 0
+    BuildType: 1
   - Active: 0
     Path: aaaaaaaabbbbvdcdd
     Filter: '*.prefab'
     CollectOption: 0
+    Encrypt: 0
+    BuildType: 1

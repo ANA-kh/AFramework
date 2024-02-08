@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using AFramework.ResModule.Utilities;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -28,7 +29,7 @@ namespace AFramework.ResModule.Editor.Builder
 
         protected List<FileInfo> GetFileInfo()
         {
-            if (string.IsNullOrEmpty(Path) || !string.IsNullOrEmpty(Filter))
+            if (string.IsNullOrEmpty(Path) || string.IsNullOrEmpty(Filter))
                 return null;
 
             DirectoryInfo directoryInfo = new DirectoryInfo(Path);
@@ -60,7 +61,7 @@ namespace AFramework.ResModule.Editor.Builder
             List<BuildAssetInfo> result = new List<BuildAssetInfo>();
             foreach (var fileInfo in fileInfos)
             {
-                BuildAssetInfo buildAssetInfo = new BuildAssetInfo(fileInfo.FullName);
+                BuildAssetInfo buildAssetInfo = new BuildAssetInfo(PathUtility.GetRegularPath(fileInfo.FullName));
                 buildAssetInfo.BundleName = GetAssetBundleName(fileInfo);
                 buildAssetInfo.IsMainAsset = true;
                 buildAssetInfo.DependAssets = GetAllDependencies(fileInfo.FullName, buildAssetInfo.BundleName);

@@ -1,18 +1,14 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using AFramework.ResModule.Utilities;
 using UnityEngine;
 
 namespace AFramework.ResModule.BundleResources
 {
     public class BundleSetting
     {
-        private const string DEFAULT_ROOT_DIR_NAME = "bundles";
-        private const string MANIFEST_FILENAME = "manifest.dat";
-
-        private static string manifestFilename;
-        private static string bundleRoot;
-
+        //TODO  此处,在Editor模式只有编译后才会重新调用构造.  在Play时,每次都会调用构造   且play模式静态构造里改变静态成员,会影响Editor
         static BundleSetting()
         {
             TextAsset textAsset = Resources.Load<TextAsset>("BundleSetting");
@@ -33,42 +29,22 @@ namespace AFramework.ResModule.BundleResources
                     string value = m.Groups[2].Value;
                     switch (key)
                     {
-                        case "manifestFilename":
+                        case "ManifestFilename":
                             ManifestFilename = value;
                             break;
-                        case "bundleRoot":
-                            BundleRoot = value;
+                        case "RootDir":
+                            RootDir = value;
                             break;
                     }
                 }
             }
         }
 
-        /// <summary>
-        /// Manifest's filename.
-        /// </summary>
-        public static string ManifestFilename
-        {
-            get { return manifestFilename ?? (manifestFilename = MANIFEST_FILENAME); }
-            protected set
-            {
-                if (string.IsNullOrEmpty(value))
-                    throw new ArgumentNullException("ManifestFilename");
+        public static string RootDir = "Product"; //访问资源时的根目录.   persistentDataPath/RootDir   streamingAssetsPath/RootDir
+        public static string ManifestFilename = "manifest.json";
 
-                manifestFilename = value;
-            }
-        }
+        public static string StreamingAssetsRoot => PathUtility.CombinePaths(Application.streamingAssetsPath, RootDir);
 
-        public static string BundleRoot
-        {
-            get { return bundleRoot ?? (bundleRoot = DEFAULT_ROOT_DIR_NAME); }
-            protected set
-            {
-                if (string.IsNullOrEmpty(value))
-                    throw new ArgumentNullException("BundleRoot");
-
-                bundleRoot = value;
-            }
-        }
+        public static string PersistentDataRoot => PathUtility.CombinePaths(Application.persistentDataPath, RootDir);
     }
 }

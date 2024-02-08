@@ -3,6 +3,7 @@
 
 优先读取persistentDataPath下的manifest,没有则读streamingAsset下的manifest并拷贝到persistent下
 内置资源清单,查询时直接查询清单文件,对于Android不需要使用特殊方法(zip,java)
+区分首包资源
 
 分发相关逻辑
 

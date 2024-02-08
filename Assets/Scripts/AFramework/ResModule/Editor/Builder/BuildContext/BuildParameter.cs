@@ -29,7 +29,10 @@ namespace AFramework.ResModule.Editor.Builder.BuildContext
         public int ResVersion;
         public CompressOption CompressOption = CompressOption.Uncompressed;
         public BuildMode BuildMode = BuildMode.ForceRebuild;
+
+        [NonSerialized]
         public bool DisableWriteTypeTree = false; //禁止写入类型树结构（可以降低包体和内存并提高加载效率）
+        [NonSerialized]
         public bool IgnoreTypeTreeChanges = true;
 
         public string BuildOutputRoot => BuildSetting.DefaultBuildOutputRoot();

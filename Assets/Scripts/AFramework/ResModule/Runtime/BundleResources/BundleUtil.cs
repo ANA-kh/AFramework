@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using UnityEngine;
 
@@ -5,29 +6,41 @@ namespace AFramework.ResModule.BundleResources
 {
     public class BundleUtil
     {
-        public readonly static string streamingAssetsPath = Application.streamingAssetsPath;
-        public readonly static string persistentDataPath = Application.persistentDataPath;
-        public readonly static string RootPath = BundleSetting.BundleRoot;
-        public static string StorableDirectory { get; }
-        public static string ReadOnlyDirectory { get; }
+        public static string StorableDirectory => BundleSetting.PersistentDataRoot;
+        public static string ReadOnlyDirectory => BundleSetting.StreamingAssetsRoot;
 
-        //TODO  此处,在Editor模式只有编译后才会重新调用构造.  在Play时,每次都会调用构造   且play模式静态构造里改变静态成员,会影响Editor
-        static BundleUtil()
-        {
-            StorableDirectory = persistentDataPath + "/" + RootPath + "/";
-            ReadOnlyDirectory = streamingAssetsPath + "/" + RootPath + "/";
-        }
-        
         public static string GetBasePath(BundleInfo bundleInfo)
         {
-            if (ExistsInStorableDirectory(bundleInfo.Filename))
+            if (ExistsInStorableDirectory(bundleInfo.BundleName))
                 return StorableDirectory;
 
-            if (ExistsInReadOnlyDirectory(bundleInfo.Filename))
+            if (ExistsInReadOnlyDirectory(bundleInfo.BundleName))
                 return ReadOnlyDirectory;
 
             return null;
         }
+
+        public static Manifest LoadManifest()
+        {
+            if (ExistsInStorableDirectory(BundleSetting.ManifestFilename))
+            {
+                string json = File.ReadAllText(System.IO.Path.Combine(StorableDirectory, BundleSetting.ManifestFilename));
+                return JsonUtility.FromJson<Manifest>(json);
+            }
+            else
+            {
+                var text = Resources.Load<TextAsset>(BundleSetting.ManifestFilename);
+                if (text)
+                {
+                    //沙河和builtin都没有manifest文件,需要重装app了
+                    throw new Exception("Manifest file not found");
+                }
+
+                return JsonUtility.FromJson<Manifest>(text.text);
+            }
+        }
+
+        #region OldExistsInDirectory  旧的检查文件是否存在的方法
 
         private static bool ExistsInStorableDirectory(string relativePath)
         {
@@ -38,12 +51,12 @@ namespace AFramework.ResModule.BundleResources
 
             return false;
         }
-        
+
         private static bool ExistsInReadOnlyDirectory(string relativePath)
         {
             string dir = ReadOnlyDirectory;
             string fullPath = System.IO.Path.Combine(dir, relativePath);
-            
+
 #if UNITY_ANDROID && !UNITY_EDITOR
 //检查Android APK中文件是否存在
             var zipFileName = GetCompressedFileName(fullPath);
@@ -78,5 +91,7 @@ namespace AFramework.ResModule.BundleResources
             return url.Substring(0, url.LastIndexOf("!"));
         }
 #endif
+
+        #endregion
     }
 }
