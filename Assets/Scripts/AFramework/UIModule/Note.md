@@ -17,3 +17,8 @@ UIRaycastBlocker
 ---------------tips
 OnHide: 设置canvas的enable,隐藏ui实现0gc.  非ui元素可以添加一个基础UIbehaviour的组件,重写oncanvashirerchychanged接口(对于meshrenderer,设置enabled;particlesystem,用play以及stop进行控制，还有clear接口)
 或者设置Canvas的Layer,让相机culling
+
+
+# 结构
+ui框架 mvp + react
+ui之间的管理,ui生命周期
