@@ -1,64 +1,64 @@
 {
-  "AppVersion": 1,
-  "ResVersion": 3,
-  "BundleInfos": [
-    {
-      "BundleName": "assets_bundleresources_models_assets-hd.bundle",
-      "UnityCRC": 1978781012,
-      "FileHash": "0d5e72df",
-      "FileCRC": "0d5e72df",
-      "FileSize": 138861,
-      "Encrypted": false,
-      "DependBundleIDs": []
-    },
-    {
-      "BundleName": "assets_bundleresources_models_green.bundle",
-      "UnityCRC": 231755342,
-      "FileHash": "d75e2b19",
-      "FileCRC": "d75e2b19",
-      "FileSize": 45803,
-      "Encrypted": false,
-      "DependBundleIDs": []
-    },
-    {
-      "BundleName": "assets_bundleresources_models_plane.bundle",
-      "UnityCRC": 3895792099,
-      "FileHash": "1e9b5e3a",
-      "FileCRC": "1e9b5e3a",
-      "FileSize": 45723,
-      "Encrypted": false,
-      "DependBundleIDs": []
-    },
-    {
-      "BundleName": "assets_bundleresources_models_red.bundle",
-      "UnityCRC": 293808462,
-      "FileHash": "09577799",
-      "FileCRC": "09577799",
-      "FileSize": 45721,
-      "Encrypted": false,
-      "DependBundleIDs": []
-    }
-  ],
-  "AssetInfos": [
-    {
-      "AssetPath": "Assets/BundleResources/Models/Assets-HD/Cube.prefab",
-      "BundleID": 0
-    },
-    {
-      "AssetPath": "Assets/BundleResources/Models/Assets-HD/Sphere.prefab",
-      "BundleID": 0
-    },
-    {
-      "AssetPath": "Assets/BundleResources/Models/Green/Green.prefab",
-      "BundleID": 1
-    },
-    {
-      "AssetPath": "Assets/BundleResources/Models/Plane/Plane.prefab",
-      "BundleID": 2
-    },
-    {
-      "AssetPath": "Assets/BundleResources/Models/Red/Red.prefab",
-      "BundleID": 3
-    }
-  ]
+    "AppVersion": 1,
+    "ResVersion": 4,
+    "BundleInfos": [
+        {
+            "BundleName": "assets_bundleresources_models_assets-hd.bundle",
+            "UnityCRC": 1978781012,
+            "FileHash": "0d5e72df",
+            "FileCRC": "0d5e72df",
+            "FileSize": 138861,
+            "Encrypted": false,
+            "DependBundleIDs": []
+        },
+        {
+            "BundleName": "assets_bundleresources_models_green.bundle",
+            "UnityCRC": 231755342,
+            "FileHash": "d75e2b19",
+            "FileCRC": "d75e2b19",
+            "FileSize": 45803,
+            "Encrypted": false,
+            "DependBundleIDs": []
+        },
+        {
+            "BundleName": "assets_bundleresources_models_plane.bundle",
+            "UnityCRC": 3895792099,
+            "FileHash": "1e9b5e3a",
+            "FileCRC": "1e9b5e3a",
+            "FileSize": 45723,
+            "Encrypted": false,
+            "DependBundleIDs": []
+        },
+        {
+            "BundleName": "assets_bundleresources_models_red.bundle",
+            "UnityCRC": 293808462,
+            "FileHash": "09577799",
+            "FileCRC": "09577799",
+            "FileSize": 45721,
+            "Encrypted": false,
+            "DependBundleIDs": []
+        }
+    ],
+    "AssetInfos": [
+        {
+            "AssetPath": "Assets/BundleResources/Models/Assets-HD/Cube.prefab",
+            "BundleID": 0
+        },
+        {
+            "AssetPath": "Assets/BundleResources/Models/Assets-HD/Sphere.prefab",
+            "BundleID": 0
+        },
+        {
+            "AssetPath": "Assets/BundleResources/Models/Green/Green.prefab",
+            "BundleID": 1
+        },
+        {
+            "AssetPath": "Assets/BundleResources/Models/Plane/Plane.prefab",
+            "BundleID": 2
+        },
+        {
+            "AssetPath": "Assets/BundleResources/Models/Red/Red.prefab",
+            "BundleID": 3
+        }
+    ]
 }
