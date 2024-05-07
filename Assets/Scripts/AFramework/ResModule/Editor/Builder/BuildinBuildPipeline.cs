@@ -85,7 +85,8 @@ namespace AFramework.ResModule.Editor.Builder
                 var filePath = PathUtility.CombinePaths(buildParameter.BuildOutputCachePath, bundleInfo.BundleName);
                 BuildPipeline.GetCRCForAssetBundle(filePath, out var UnityCRC);
                 bundleInfo.UnityCRC = UnityCRC;
-                bundleInfo.FileHash = HashUtility.FileCRC32(filePath);
+                bundleInfo.UnityHash = unityManifest.GetAssetBundleHash(bundleInfo.BundleName).ToString();
+                bundleInfo.FileHash = HashUtility.FileMD5(filePath);
                 bundleInfo.FileCRC = HashUtility.FileCRC32(filePath);
                 bundleInfo.FileSize = FileUtil.GetFileSize(filePath);
             }

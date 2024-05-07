@@ -10,6 +10,7 @@ namespace AFramework.ResModule.Editor.Builder
     {
         public string BundleName;
         public uint UnityCRC;
+        public string UnityHash;
         public string FileHash;
         public string FileCRC;
         public long FileSize;
